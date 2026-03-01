@@ -1,18 +1,25 @@
 import random as rand
 
-# TODO: generate random solvable board
-# right now, this just generates a random board which may or may not be 
-# solvable. Fix that and generate a solvable board
-def generate_random_board(rows, cols):
+# TODO: shuffle the solved board to make a proper solution
+def generate_random_solvable_board(rows, cols):
     board = []
     for r in range(0, rows):
         row = []
         for c in range(0, cols):
             col = []
+
+            if (r == 0):
+                col.append(rand.randint(0, 9))
+            else:
+                col.append(board[r-1][c][2])
+
             col.append(rand.randint(0, 9))
             col.append(rand.randint(0, 9))
-            col.append(rand.randint(0, 9))
-            col.append(rand.randint(0, 9))
+
+            if (c == 0):
+                col.append(rand.randint(0, 9))
+            else:
+                col.append(row[c-1][1])
 
             row.append(col)
         board.append(row)
@@ -27,7 +34,7 @@ def print_board(board, rows, cols):
             if row % 3 == 0:
                 print(f"\\ {b[r][c][0]} /", end='')
             elif row % 3 == 1:
-                print(f"{b[r][c][3]} X {b[r//3][c][1]}", end='')
+                print(f"{b[r][c][3]} X {b[r][c][1]}", end='')
             else:
                 print(f"/ {b[r][c][2]} \\", end='')
 
@@ -41,7 +48,7 @@ def print_board(board, rows, cols):
                     print("-+-", end='')
             print()
 
-rows = 2
-cols = 2
-board = generate_random_board(rows, cols)
+rows = 4
+cols = 4
+board = generate_random_solvable_board(rows, cols)
 print_board(board, rows, cols)
