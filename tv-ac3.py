@@ -1,5 +1,8 @@
 import random as rand
 
+# TODO: generate random solvable board
+# right now, this just generates a random board which may or may not be 
+# solvable. Fix that and generate a solvable board
 def generate_random_board(rows, cols):
     board = []
     for r in range(0, rows):
