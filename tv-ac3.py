@@ -1,6 +1,5 @@
 import random as rand
 
-# TODO: shuffle the solved board to make a proper solution
 def generate_random_solvable_board(rows, cols):
     board = []
     for r in range(0, rows):
@@ -26,6 +25,16 @@ def generate_random_solvable_board(rows, cols):
 
     return board
 
+def board_to_domain(board):
+    cells = []
+    for r in range(0, rows):
+        for c in range(0, cols):
+            cells.append(board[r][c])
+
+    rand.shuffle(cells)
+    return cells
+
+## TODO: implement 256 bit colored output
 def print_board(board, rows, cols):
     b = board
     for row in range(0, rows*3):
