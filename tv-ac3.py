@@ -6,23 +6,18 @@ def generate_random_solvable_board(rows, cols):
         row = []
         for c in range(0, cols):
             col = []
-
             if (r == 0):
                 col.append(rand.randint(0, 9))
             else:
                 col.append(board[r-1][c][2])
-
             col.append(rand.randint(0, 9))
             col.append(rand.randint(0, 9))
-
             if (c == 0):
                 col.append(rand.randint(0, 9))
             else:
                 col.append(row[c-1][1])
-
             row.append(col)
         board.append(row)
-
     return board
 
 def board_to_domain(board):
