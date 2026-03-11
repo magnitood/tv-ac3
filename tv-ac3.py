@@ -1,5 +1,33 @@
 import random as rand
 
+white = 255
+black = 202
+red = 124
+green = 84
+orange = 215
+blue = 25
+sky = 75
+pink = 134
+yellow = 220
+brown = 137
+
+fg = lambda n: "\x1b[38:5:"+str(n)+"m"
+bg = lambda n: "\x1b[48:5:"+str(n)+"m"
+rst = "\x1b[0m"
+
+color = {
+    0: fg(white)+"0"+rst,
+    1: fg(red)+"1"+rst,
+    2: fg(green)+"2"+rst,
+    3: fg(orange)+"3"+rst,
+    4: fg(blue)+"4"+rst,
+    5: fg(sky)+"5"+rst,
+    6: fg(pink)+"6"+rst,
+    7: fg(yellow)+"7"+rst,
+    8: fg(brown)+"8"+rst,
+    9: fg(black)+"9"+rst,
+}
+
 def generate_random_solvable_board(rows, cols):
     board = []
     for r in range(0, rows):
@@ -29,28 +57,33 @@ def board_to_domain(board):
     rand.shuffle(cells)
     return cells
 
-## TODO: implement 256 bit colored output
 def print_board(board, rows, cols):
     b = board
     for row in range(0, rows*3):
+        if (row%3 == 0):
+            for c in range(0, cols):
+                print("+-------", end='')
+            print("+")
+
         for c in range(0, cols):
+            if (c == 0):
+                print("| ", end='')
+            else:
+                print(" | ", end='')
+
             r = row // 3
             if row % 3 == 0:
-                print(f"\\ {b[r][c][0]} /", end='')
+                print(f"\\ {color[b[r][c][0]]} /", end='')
             elif row % 3 == 1:
-                print(f"{b[r][c][3]} X {b[r][c][1]}", end='')
+                print(f"{color[b[r][c][3]]} X {color[b[r][c][1]]}", end='')
             else:
-                print(f"/ {b[r][c][2]} \\", end='')
+                print(f"/ {color[b[r][c][2]]} \\", end='')
 
-            if (c < cols-1):
-                print(" | ", end='')
-        print()
-        if row % 3 == 2 and row//3 < rows-1:
-            for c in range(0, cols):
-                print("-----", end='')
-                if (c < cols-1):
-                    print("-+-", end='')
-            print()
+        print(" |")
+
+    for c in range(0, cols):
+        print("+-------", end='')
+    print("+")
 
 rows = 4
 cols = 4
