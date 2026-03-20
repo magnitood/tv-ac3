@@ -1,4 +1,6 @@
 import random as rand
+from collections import deque
+import copy
 
 white = 255
 black = 202
@@ -135,39 +137,102 @@ def next_unassigned_var(board, rows, cols):
             if (board[r][c][0] == None):
                 return r, c
 
+def all_arcs(domain, rows, cols):
+    queue = deque()
+    for r in range(0, rows):
+        for c in range(0, cols):
+            if (r != 0):
+                queue.append(((r, c), (r-1, c)))
+                queue.append(((r-1, c), (r, c)))
+            if (c != 0):
+                queue.append(((r, c), (r, c-1)))
+                queue.append(((r, c-1), (r, c)))
+    return queue
+
+def compatible(value, domain, direction):
+    for y in domain:
+        if (direction == 0):
+            if (value[0] == y[2]):
+                return True
+        if (direction == 1):
+            if (value[1] == y[3]):
+                return True
+        if (direction == 2):
+            if (value[2] == y[0]):
+                return True
+        if (direction == 3):
+            if (value[3] == y[1]):
+                return True
+
+    return False
+
+
 # AC-3
 # returns True and alters domain if arc-consistent
-# returns False
+# returns False otherwise
 def apply_inference(domain, board, rows, cols):
-    return True
+    # arcs are represented as tuple of coords
+    d = copy.deepcopy(domain)
+    queue = all_arcs(d, rows, cols)
+    while queue:
+        x, y = queue.popleft()
+        if (x[0]-1 == y[0]):
+            direction = 0 # y is in top
+        elif (x[1]+1 == y[1]):
+            direction = 1 # y is in right
+        elif (x[0]+1 == y[0]):
+            direction = 2 # y is in bottom
+        else:
+            direction = 3 # y is in left
+        dirty = False
+        d_temp = copy.deepcopy(d[x[0]][x[1]])
+        for value in d_temp:
 
-# board, rows and cols together is the assignement
-# domain is the csp
+            if not compatible(value, d[y[0]][y[1]], direction):
+                d[x[0]][x[1]].remove(value)
+                dirty = True
+
+        if not d[x[0]][x[1]]:
+            return False
+        if dirty:
+            for c in all_arcs(domain, rows, cols):
+                if x in c and y not in c:
+                    queue.append(c)
+    return d
 
 count = 0
+# board, rows and cols together is the assignement
+# domain is the csp
 def backtracking_solver(domain, board, rows, cols):
     if (is_board_full(board, rows, cols)):
-        return True
+        global count
+        count += 1
+        if (is_board_valid(board, rows, cols)):
+            return True
+        else:
+            return False
 
     r, c = next_unassigned_var(board, rows, cols)
     for value in domain[r][c]:
         board[r][c] = value
-        old_domain = domain.copy()
-        if apply_inference(domain, board, rows, cols):
+        res = apply_inference(domain, board, rows, cols)
+        if res != False:
+            saved = copy.deepcopy(domain)
+            domain = res
             result = backtracking_solver(domain, board, rows, cols)
             if result:
                 return True
-            domain = old_domain
+            domain = saved
         board[r][c] = [None, None, None, None]
     return False
 
-rows = 5
-cols = 5
+rows = 2
+cols = 2
 domain = generate_random_solvable_domain(rows, cols)
-print(domain[0][0])
 board = init_board(rows, cols)
 result = backtracking_solver(domain, board, rows, cols)
 if result:
     print_board(board, rows, cols)
+    print(f"Solution Found after searching for {count} states")
 else:
     print("No Solution", count)
